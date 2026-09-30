@@ -5,8 +5,7 @@
 ```python
 print("Sachin")
 print("BGM")
-print("Arun")
-print("Darshan")
+print("Virat")
 ```
 
 Instead of repeating the same code, we can use a function:
