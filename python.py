@@ -206,3 +206,6 @@ Because a -> [10, 20], b -> [10, 20]
 both names reference the same list object
 append() modifies that list
 '''
+def test():
+    return 10
+print("Hello")
