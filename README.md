@@ -59,19 +59,13 @@ console.log(next()); // 1
 
 ### 1. What is a variable in Python?
 
-A variable is a named reference to a value stored in memory. In Python, a variable is not a simple box that stores the value directly; it is a name bound to an object.
+A variable is a name bound to an object. It is not a box that contains the object itself.
 
 ```python
 x = 10
 ```
 
-Conceptually:
-
-```python
-x -> 10
-```
-
-Here, `x` is the variable name, and `10` is an object in memory. The variable points to that object.
+Conceptually, x refers to the integer object 10. Assignment binds the name x to that object.
 
 ### Important idea
 
@@ -92,7 +86,7 @@ Both names refer to the same dictionary object.
 
 ## 2. Everything in Python is an object
 
-This is a very important interview concept.
+Python's data model represents values as objects. Objects have an identity, a type, and a value.
 
 ```python
 x = 10
@@ -135,63 +129,27 @@ So an object has:
 
 ---
 
-## 3. Python built-in data types
+### 3. Built-in data type categories
 
-A useful classification:
-
-### Numeric
-- `int`
-- `float`
-- `complex`
-
-### Boolean
-- `bool`
-
-### Text
-- `str`
-
-### Sequence
-- `list`
-- `tuple`
-- `range`
-
-### Set
-- `set`
-- `frozenset`
-
-### Mapping
-- `dict`
-
-### Binary
-- `bytes`
-- `bytearray`
-- `memoryview`
-
-### Special
-- `None`
+- Numeric: `int`, `float`, `complex`
+- Boolean: `bool`
+- Text: `str`
+- Sequences: `list`, `tuple`, `range`
+- Sets: `set`, `frozenset`
+- Mapping: `dict`
+- Binary: `bytes`, `bytearray`, `memoryview`
+- Special value: `None` (whose type is `NoneType`)
 
 ---
 
-## 4. Numeric types
-
-### Integer
+### 4. Numeric types
 
 ```python
-age = 25
-count = -10
-```
-
-### Float
-
-```python
-price = 99.50
-percentage = 85.75
-```
-
-### Complex
-
-```python
-z = 3 + 4j
+age = 25             # int
+count = -10          # int
+price = 99.0         # float
+percentage = 88.75   # float
+z = 3 + 4j           # complex
 ```
 
 ---
