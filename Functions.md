@@ -361,6 +361,7 @@ This is a common pattern in real programs:
 
 ---
 
+
 ## Summary
 
 - A function is a reusable block of code.
@@ -388,3 +389,191 @@ Output:
 Hello, Sachin
 Hello, Virat
 ```
+
+## 21. Function calling flow
+Python first executes the function definition, which creates a function object. When the call happens, the argument values are bound to the parameters, the function body runs, and `return` sends the result back to the caller.
+
+```python
+def multiply(a, b):
+    return a * b
+
+result = multiply(5, 4)
+print(result)  # 20
+```
+Here, `5` is assigned to `a`, `4` is assigned to `b`, and the returned value is assigned to `result`.
+
+---
+## 22. Functions are objects
+A function can be assigned to another name. Calling that name calls the same function; parentheses are used to call it, not when assigning it.
+
+```python
+def greet():
+    print("Hello")
+
+x = greet
+x()  # Hello
+```
+`x` now refers to the function object `greet`.
+
+---
+## 23. Passing a function to another function
+
+Since functions are objects, they can be passed as arguments. A function that accepts or returns another function is called a higher-order function.
+
+```python
+def square(x):
+    return x * x
+
+def process(function, value):
+    return function(value)
+
+print(process(square, 5))  # 25
+```
+Pass `square` without parentheses so `process` receives the function itself. `square` is called inside `process`.
+
+---
+## 24. Lambda functions
+
+A `lambda` expression creates a small anonymous function. It contains one expression and returns that expression's value.
+
+```python
+square = lambda x: x * x
+print(square(5))  # 25
+```
+
+For named operations, a `def` function is usually clearer. Lambdas are often used for short operations, such as transforming values with `map`:
+
+```python
+numbers = [1, 2, 3, 4]
+result = list(map(lambda x: x * 2, numbers))
+print(result)  # [2, 4, 6, 8]
+```
+
+`map` applies the function to each item; `list` collects its results into a list.
+
+---
+## 25. Recursion
+
+A recursive function calls itself. It needs a base case to stop, and each recursive call should move toward that case.
+
+```python
+def countdown(n):
+    if n == 0:
+    return
+    print(n)
+    countdown(n - 1)
+
+countdown(5)
+```
+This prints `5` through `1`. The `n == 0` base case stops the recursion.
+
+---
+## 26. Function documentation
+
+A docstring is a string literal at the start of a function body that describes the function. It can be read through `__doc__` or displayed with `help()`.
+
+```python
+def add(a, b):
+    """Return the sum of two numbers."""
+    return a + b
+
+print(add.__doc__)
+help(add)
+```
+
+Clear docstrings make functions easier for other developers and tools to understand.
+
+---
+## 27. Type hints
+
+Type hints document the expected types of parameters and return values. The return annotation goes before the colon.
+
+```python
+def add(a: int, b: int) -> int:
+    return a + b
+
+print(add(2, 3))  # 5
+```
+
+Python generally does not enforce these annotations at runtime. Editors, type checkers, and other tools can use them to help detect mistakes.
+
+---
+## 28. A practical program: electricity bill
+
+This example charges 2 per unit for the first 100 units, 4 per unit for the next 100, and 6 per unit above 200. It also adds a fixed charge of 100.
+
+```python
+def calculate_bill(units):
+    if units < 0:
+        raise ValueError("Units cannot be negative")
+
+    if units <= 100:
+        amount = units * 2
+    elif units <= 200:
+        amount = 100 * 2 + (units - 100) * 4
+    else:
+        amount = 100 * 2 + 100 * 4 + (units - 200) * 6
+
+    return amount + 100
+
+def electricity_bill():
+    units = int(input("Enter units: "))
+    bill = calculate_bill(units)
+    print("Bill:", bill)
+
+electricity_bill()
+```
+`calculate_bill` handles the calculation, while `electricity_bill` handles input and display. Separating these responsibilities makes the calculation easier to reuse and test without interactive input, and keeps the program easier to read and maintain.
+
+---
+## 29. Function design
+
+A well-designed function commonly has three parts:
+
+- **Input:** parameters or other data the function receives.
+- **Processing:** the work it performs.
+- **Output:** a returned result or another clearly defined effect.
+
+For example, `calculate_bill(units)` receives units, calculates a total, and returns the bill amount.
+
+---
+
+## 30. Avoid giant functions
+
+### Bad: one giant function
+
+Putting the whole student system in one function gives it too many responsibilities:
+
+```python
+def student_system():
+    # 200 lines of code
+    # input
+    # validation
+    # calculation
+    # database operations
+    # printing
+    pass
+```
+
+### Better: split the work into focused functions
+
+```python
+def get_student():
+    pass
+
+def validate_student(student):
+    pass
+
+def calculate_result(student):
+    pass
+
+def save_result(result):
+    pass
+
+def display_result(result):
+    pass
+```
+
+Each function has one clear responsibility, making the program easier to understand, test, and maintain. This improves organization and reliability, not necessarily speed.
+
+---
