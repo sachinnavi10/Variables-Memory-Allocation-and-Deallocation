@@ -1,178 +1,178 @@
 # Language Comparison: JavaScript, Node.js, Python, and Java
 
-This guide compares how variables, objects, functions, memory, and concurrency work in JavaScript, Node.js, Python, and Java. These languages share some ideas, but details depend on the runtime and implementation.
+This guide explains how these languages handle variables, objects, functions, and memory, using simple words and examples.
 
-> **Important:** JavaScript and Python are programming languages. **Node.js is a runtime for JavaScript**, not a separate language. Node.js uses the V8 JavaScript engine and adds APIs and services for server-side applications.
+> **Note:** JavaScript and Python are languages. **Node.js is a program that runs JavaScript**, often on servers. It uses the V8 JavaScript engine and adds tools for working with files, networks, and other services.
 
-## 1. Variable declaration
+## 1. Declaring variables
 
-| Language | Example | What it means |
+| Language | Example | Meaning |
 | --- | --- | --- |
-| JavaScript | `let count = 1;` | Block-scoped variable that can be reassigned |
-| JavaScript | `const settings = {};` | Block-scoped binding that cannot be reassigned; the object can still be mutated |
-| JavaScript | `var count = 1;` | Older function-scoped declaration; generally prefer `let` or `const` |
-| Python | `count = 1` | A name is bound to an object; no declaration keyword is required |
-| Java | `int count = 1;` | Declares a variable with a type known at compile time |
+| JavaScript | `let count = 1;` | Makes a variable that can be changed |
+| JavaScript | `const settings = {};` | The name cannot point to a different value, but the object can still be changed |
+| JavaScript | `var count = 1;` | An older way to make a variable |
+| Python | `count = 1` | Gives a name to a value |
+| Java | `int count = 1;` | Makes a variable and states its type |
 
-Python does not have “dynamic variable names” as its normal variable model. Python names are bound to objects at runtime, and the object’s type can change:
+Python does not need a special word to make a variable. A name can refer to values of different types:
 
 ```python
 value = 10
-value = "ten"  # The name now refers to a string object.
+value = "ten"
 ```
 
-JavaScript’s `const` makes the **binding** constant, not the contents of an object:
+In JavaScript, `const` protects the name, not the object:
 
 ```javascript
 const user = { name: "Ari" };
-user.name = "Sam";       // Allowed: object is mutated.
-// user = {};            // TypeError: binding cannot be reassigned.
+user.name = "Sam"; // Allowed: the object changes.
+// user = {};      // Error: the name cannot point to a new object.
 ```
 
-## 2. Static vs. dynamic typing
+## 2. Static and dynamic types
 
-- **Java is statically typed:** types are checked primarily at compile time. A variable declared `int` cannot later hold a string.
-- **JavaScript and Python are dynamically typed:** values have types at runtime, and a name can refer to values of different types at different times.
-- Dynamic typing does not mean “no types.” It means type rules are applied differently, primarily while the program runs.
-- Runtime checks still occur in Java, and static analysis tools can add useful type checking to JavaScript and Python.
+- **Java uses static types:** Java checks many type rules before the program runs. An `int` variable cannot hold text.
+- **JavaScript and Python use dynamic types:** Types are checked while the program runs. A name can refer to a number and later to text.
+- All three languages have types. They mainly differ in when and how they check them.
 
 ```javascript
 let value = 10;
-value = "ten"; // Valid JavaScript; the value is now a string.
+value = "ten"; // Allowed
 ```
 
 ```java
 int value = 10;
-// value = "ten"; // Compile-time error: String is not assignable to int.
+// value = "ten"; // Error: text cannot be stored in an int.
 ```
 
-## 3. Primitive and reference/object types
+## 3. Basic values and objects
 
-- **JavaScript:** Primitive values include numbers, strings, booleans, `null`, `undefined`, `bigint`, and symbols. Objects include arrays, functions, and ordinary objects.
-- **Python:** Every value is an object, including integers, strings, lists, and functions. Some objects are immutable, but they are still objects.
-- **Java:** Primitive values include `int`, `double`, and `boolean`. Class instances and arrays are reference types. Wrapper classes such as `Integer` are objects.
+- **JavaScript:** Numbers, strings, and true/false values are basic values. Arrays, functions, and objects are objects.
+- **Python:** Every value is an object, including numbers, strings, and lists.
+- **Java:** Types such as `int` and `boolean` are basic types. Arrays and class instances are objects.
 
-This distinction affects mutability, equality, and how values are passed to functions. It does not mean a variable is necessarily stored in a particular physical memory region; that is discussed in section 6.
+These differences affect how values are compared, changed, and passed to functions. They do not tell us exactly where a value is kept in memory.
 
-## 4. Variable → object → reference
+## 4. Variables, objects, and references
 
-A useful mental model is that a variable or name holds a value. For an object, that value behaves like a reference to the object. Assigning that value to another variable copies the reference, not the object itself.
+A variable is a name for a value. For an object, the value acts like a link to that object. Giving the value to another name usually copies the link, not the whole object.
 
 ```javascript
 const first = { score: 5 };
 const second = first;
 second.score = 9;
-console.log(first.score); // 9: both refer to the same object.
+console.log(first.score); // 9: both names point to the same object.
 ```
 
-Assignment generally does **not** clone an object. To make a shallow copy in JavaScript, for example, use `{ ...first }`; nested objects are still shared unless copied separately.
+To copy an object in JavaScript, you can use `{ ...first }`. This only makes a shallow copy: objects inside it are still shared.
 
 ### What does `a == b` mean?
 
-It depends on the language and operator:
+It depends on the language:
 
-- **JavaScript:** `==` performs coercive equality in many cases; `===` compares without that coercion. For objects, both operators test whether the two references identify the same object.
-- **Python:** `==` normally asks whether values are equal, according to the objects’ equality behavior. `is` checks object identity.
-- **Java:** `==` compares primitive values for primitives, but tests whether references identify the same object for object types. Use `.equals()` when value equality is intended and implemented by that class.
+- **JavaScript:** `==` may change types before comparing. `===` compares without that type change. For objects, both check if the two values point to the same object.
+- **Python:** `==` usually checks whether values are equal. `is` checks whether two names point to the same object.
+- **Java:** `==` compares basic values, but for objects it checks whether two references point to the same object. Use `.equals()` to compare object contents when that class supports it.
 
 ```javascript
-console.log(3 == "3");  // true: coercion
-console.log(3 === "3"); // false: different types
-console.log({} === {}); // false: distinct objects
+console.log(3 == "3");  // true: JavaScript changes a type for the comparison.
+console.log(3 === "3"); // false: number and text are different types.
+console.log({} === {}); // false: these are two different objects.
 ```
 
 ```python
 a = [1, 2]
 b = [1, 2]
-print(a == b)  # True: equal contents
-print(a is b)  # False: distinct list objects
+print(a == b)  # True: same contents
+print(a is b)  # False: different list objects
 ```
 
 ```java
 String a = new String("hi");
 String b = new String("hi");
-System.out.println(a == b);      // false: distinct objects
-System.out.println(a.equals(b)); // true: equal string contents
+System.out.println(a == b);      // false: different objects
+System.out.println(a.equals(b)); // true: same text
 ```
 
-## 5. Mutable vs. immutable
+## 5. Changeable and unchangeable values
 
-An **immutable** value cannot be changed after it is created. A **mutable** object can be changed in place.
+An **unchangeable** value cannot be changed after it is made. A **changeable** object can be updated.
 
-| Language | Immutable examples | Mutable examples |
+| Language | Unchangeable examples | Changeable examples |
 | --- | --- | --- |
-| JavaScript | strings, numbers, booleans | arrays, ordinary objects, `Map`, `Set` |
-| Python | strings, integers, tuples (when their contents are immutable) | lists, dictionaries, sets |
-| Java | `String`, boxed primitives such as `Integer` | arrays, most collection implementations, most user-defined objects |
+| JavaScript | strings, numbers, true/false values | arrays, objects, `Map`, `Set` |
+| Python | strings, integers, many tuples | lists, dictionaries, sets |
+| Java | `String`, `Integer` | arrays, most lists and other collections |
 
-Reassignment is different from mutation. In Python, concatenating strings creates a new string and binds the name to it; appending to a list mutates the existing list:
+Changing a variable is not the same as changing an object. For example, adding text creates a new string, while adding an item changes a list:
 
 ```python
 text = "hi"
-text += "!"       # New string; text is rebound.
+text += "!"        # Makes a new string.
 items = [1, 2]
-items.append(3)   # Existing list is mutated.
+items.append(3)    # Changes the existing list.
 ```
 
-JavaScript behaves similarly for strings and arrays:
+JavaScript and Java strings also cannot be changed in place. Arrays can be changed:
 
 ```javascript
 let text = "hi";
-text += "!";          // Produces a new string value.
+text += "!";       // Makes a new string value.
 const items = [1, 2];
-items.push(3);        // Mutates the array.
+items.push(3);     // Changes the array.
 ```
-
-Java’s `String` is immutable, while an array can be updated:
 
 ```java
 String text = "hi";
-text = text + "!";    // A new String is produced and assigned.
+text = text + "!"; // Makes a new String and stores it in text.
 int[] items = {1, 2};
-items[0] = 9;         // Mutates the array.
+items[0] = 9;      // Changes the array.
 ```
 
-## 6. Memory: stack vs. heap
+## 6. Stack and heap memory
 
-As a simplified model:
+Think of memory in two broad areas:
 
-- A **call stack** tracks active function or method calls and their execution state. It commonly includes return locations and local execution data.
-- The **heap** is an area used by runtimes for dynamically allocated objects and data whose lifetime is not limited to one call.
+- The **stack** keeps track of active function and method calls, including their local work.
+- The **heap** holds objects and other data that may need to live beyond one function call.
 
-The slogan **“variables = stack, objects = heap” is incomplete**:
+The saying **“variables are on the stack, objects are on the heap”** is too simple:
 
-1. The language usually specifies behavior, not exact physical placement. The compiler or runtime may optimize storage, keep values in registers, eliminate allocations, or move objects.
-2. A local variable may contain a primitive value, an object reference, or another implementation-specific representation.
-3. A local reference can be on a stack frame while the object it refers to is on the heap.
-4. Closures and captured locals may need to outlive the call that created them, so runtimes preserve the needed data beyond an ordinary stack frame.
-5. Stack and heap implementations differ between runtimes and platforms.
+1. Each language and runtime can store things differently.
+2. A local variable might hold a basic value or a link to an object.
+3. The local link may be part of a function call, while the object it points to is elsewhere.
+4. If a function returns an object or a saved function uses a local value, that data may need to stay alive after the call ends.
+5. The runtime may move or store values in other ways to make the program faster.
 
-Use stack/heap as a conceptual model for lifetime and allocation, not a guarantee about where every value physically resides.
+Stack and heap are useful ideas, but they do not tell us the exact place of every value.
 
-## 7. Function or method memory
+## 7. What happens during a function call?
 
-When a function or method is called, a runtime typically:
+When a function or method runs, the program generally:
 
-1. Creates or establishes a call frame containing the call’s execution state.
-2. Makes parameters and local bindings available to that call.
-3. Executes statements, potentially allocating objects or calling other functions.
-4. Produces a return value, if any.
-5. Finishes the call; its ordinary call-frame state can then be discarded.
+1. Keeps track of the new call.
+2. Makes its inputs (parameters) and local variables available.
+3. Runs its instructions. It may make objects or call more functions.
+4. Gives back a result, if there is one.
+5. Finishes the call and removes its ordinary local work.
 
-An object created during a call can remain alive after the call if a reference to it escapes—for example, by being returned, stored globally, or captured by a closure. The returned value is not necessarily copied: it may be a primitive, a reference, or another value according to the language.
+An object made inside a function can stay alive if the function returns it or saves it somewhere:
 
 ```python
 def make_list():
     local = [1, 2]
     return local
 
-saved = make_list()  # The list remains usable after make_list returns.
+saved = make_list()
+print(saved) # [1, 2]
 ```
 
-## 8. Functions across the languages
+The list can still be used because `saved` points to it.
 
-- **JavaScript and Python:** Functions are first-class values. They can be assigned to variables, passed as arguments, returned from other functions, and stored in data structures.
-- **Java:** Methods belong to classes or objects and are not generally passed around as standalone method values. Lambdas and method references provide function-like values targeting a functional interface.
+## 8. Functions in each language
+
+- **JavaScript and Python:** Functions can be saved in variables, sent to other functions, and returned from functions.
+- **Java:** Methods belong to classes or objects. Java lambdas can be used where a function-like value is needed.
 
 ```javascript
 const double = x => x * 2;
@@ -189,7 +189,7 @@ def double(x):
 def apply(fn, value):
     return fn(value)
 
-print(apply(double, 4))  # 8
+print(apply(double, 4)) # 8
 ```
 
 ```java
@@ -199,18 +199,20 @@ Function<Integer, Integer> doubleValue = x -> x * 2;
 System.out.println(doubleValue.apply(4)); // 8
 ```
 
-## 9. Pass-by-value or pass-by-reference
+## 9. How values are sent to functions
 
-**Pass-by-value** means a function receives a copy of an argument value. **Pass-by-reference**, in the strict sense, means the function receives access to the caller’s variable itself and can rebind that variable.
+When a function is called, it gets the value given to it.
 
-- **JavaScript:** Pass-by-value. For an object argument, the copied value is a reference to the same object. Mutating that object is visible to the caller; reassigning the parameter is not.
-- **Python:** Also pass-by-object-sharing (often described as call-by-sharing). The function receives a binding to the same object. Mutation of a shared mutable object is visible; rebinding the local parameter does not rebind the caller’s name.
-- **Java:** Always pass-by-value. For an object, the value copied is the reference. Mutation through that reference is visible, but assigning a different reference to the parameter does not change the caller’s variable.
+- **JavaScript:** The function gets a copy of the value. If that value points to an object, both the caller and function can see the same object.
+- **Python:** The function gets access to the same object. Changing a shared list or object can be seen by the caller.
+- **Java:** The function gets a copy of the value. For an object, that value is a link to the same object.
+
+In all three, changing a shared object can affect what the caller sees. But giving the function's local parameter a new value does not change the caller's variable.
 
 ```javascript
 function update(item) {
-  item.count++;       // Mutates the shared object.
-  item = { count: 0 }; // Rebinds only the local parameter.
+  item.count++;        // Changes the shared object.
+  item = { count: 0 }; // Changes only the local name.
 }
 const data = { count: 1 };
 update(data);
@@ -219,30 +221,30 @@ console.log(data.count); // 2
 
 ```python
 def update(items):
-    items.append(3)    # Mutates the shared list.
-    items = ["new"]    # Rebinds only the local parameter.
+    items.append(3)    # Changes the shared list.
+    items = ["new"]    # Changes only the local name.
 
 values = [1, 2]
 update(values)
-print(values)  # [1, 2, 3]
+print(values) # [1, 2, 3]
 ```
 
 ```java
 static void update(int[] values) {
-    values[0] = 9;         // Mutates the shared array.
-    values = new int[]{0}; // Rebinds only the local parameter.
+    values[0] = 9;         // Changes the shared array.
+    values = new int[]{0}; // Changes only the local name.
 }
 ```
 
-This is why “Java passes objects by reference” is misleading: the reference value is copied, and the caller’s variable itself is not passed by reference.
+So it is misleading to say “Java passes objects by reference.” Java copies the reference value; it does not give the function the caller's variable.
 
-## 10. Closures
+## 10. Saved functions (closures)
 
-A **closure** is a function together with access to variables from the surrounding lexical scope.
+A **closure** is a function that can still use values from the place where it was made.
 
-- **JavaScript:** Closures retain access to captured bindings.
-- **Python:** Nested functions can refer to enclosing-scope variables; `nonlocal` allows rebinding an enclosing function variable.
-- **Java:** Lambdas can capture local variables only when those variables are final or effectively final. A captured object may still be mutable; the restriction is on rebinding the local variable.
+- **JavaScript:** A returned function can keep using a variable from its outer function.
+- **Python:** A nested function can use a variable from the function around it. `nonlocal` lets it change that variable.
+- **Java:** A lambda can use a local variable if that variable is not later given a new value. The object it points to may still be changed.
 
 ```javascript
 function makeCounter() {
@@ -264,97 +266,89 @@ def make_counter():
     return next_count
 
 next_count = make_counter()
-print(next_count())  # 1
+print(next_count()) # 1
 ```
 
-```java
-import java.util.function.IntSupplier;
-
-int start = 4; // Effectively final: not reassigned.
-IntSupplier readStart = () -> start;
-System.out.println(readStart.getAsInt()); // 4
-```
-
-The captured data can outlive the original function call because the returned closure remains reachable and the runtime preserves the environment it needs. Capturing too much or keeping closures reachable unnecessarily can also retain memory.
+The saved function can keep its needed values after the original function ends. If the program keeps that saved function, those values must also stay available.
 
 ## 11. Garbage collection
 
-Garbage collection (GC) automates reclaiming memory for objects that a program can no longer use. It reduces the need for explicit object deallocation, but it does not guarantee immediate reclamation.
+Garbage collection is a way for the runtime to clean up objects the program can no longer use. It does not always happen right away.
 
-An object is generally **eligible for collection** when it is no longer reachable from the runtime’s roots (such as active execution state and long-lived runtime references). The exact rules vary by implementation.
+An object may be cleaned up when nothing in the running program can reach it anymore. The exact rules and timing depend on the runtime.
 
-- JavaScript’s `delete` removes an object property; it does not directly free the object or promise immediate GC.
-- Python’s `del` removes a name, item, or attribute binding. The object may still have other references, and freeing memory is not the same as returning it to the operating system.
-- Java has no general `delete` operator for objects. Losing the last reachable reference can make an object eligible for GC, but collection time is not deterministic.
+- JavaScript's `delete` removes an object property. It does not directly free the object.
+- Python's `del` removes a name or item. Other names may still point to the object.
+- Java has no general `delete` command for objects. The runtime cleans up objects that are no longer in use.
 
-Resources such as files, sockets, and locks should be released explicitly with the language’s resource-management tools (`with` in Python, `try`-with-resources in Java, or `finally`/appropriate APIs in JavaScript). Do not rely on GC timing for these.
+Files, network connections, and similar resources should be closed directly using the language's resource tools. Do not wait for garbage collection to close them.
 
-## 12. Garbage collection comparison
+## 12. How garbage collection differs
 
-| Runtime | Broad approach |
+| Runtime | Simple description |
 | --- | --- |
-| JavaScript in V8 (including Node.js) | Tracing garbage collection: identifies reachable objects and collects unreachable ones; uses generations and other optimizations |
-| CPython | Primarily reference counting, plus cyclic garbage collection for certain unreachable reference cycles |
-| Java on the JVM | Tracing garbage collection, with selectable collectors and runtime-specific strategies |
+| JavaScript in V8, including Node.js | Looks for objects the program can still reach and cleans up objects it cannot reach |
+| CPython | Counts references to objects and also checks for some unreachable object cycles |
+| Java on the JVM | Looks for objects the program can still reach and cleans up objects it cannot reach |
 
-These are broad descriptions, not promises about a specific collection schedule. Alternative Python implementations may use different memory-management strategies.
+These are general descriptions. Other Python runtimes may work differently, and no row promises exactly when cleanup happens.
 
-## 13. Memory leaks despite garbage collection
+## 13. Memory leaks can still happen
 
-GC cannot reclaim an object that remains reachable, even if the program no longer needs it. Common causes include:
+Garbage collection cannot clean up an object that the program still points to, even if the program no longer needs it. This can happen when:
 
-- A cache that grows without limits.
-- Objects accidentally kept in global variables or module-level collections.
-- Event listeners or callbacks that are never removed.
-- Long-lived collections that retain completed tasks or request data.
-- Closures that retain large surrounding objects.
+- A cache keeps growing and never removes old items.
+- A global list keeps old data.
+- Event listeners are added but never removed.
+- A long-running list keeps completed tasks or old requests.
+- A saved function keeps large objects it no longer needs.
 
-For example, registering a listener for every request and never unregistering it can keep each callback—and anything it captures—reachable.
+For example, if each request adds a listener and it is never removed, the program may keep every listener and its data in memory.
 
-## 14. Runtime comparison
+## 14. What runs the code?
 
-- **JavaScript:** A language standardized by ECMAScript. V8 is one JavaScript engine; browsers may use other engines.
-- **Node.js:** A JavaScript runtime built around V8, with Node APIs and components including libuv for event-driven I/O and related services.
-- **Python:** A language with multiple implementations. CPython is the most widely used implementation and runs Python code through its runtime and bytecode machinery.
-- **Java:** Java source is commonly compiled to bytecode and executed by a Java Virtual Machine (JVM), which may interpret and JIT-compile code.
+- **JavaScript** is a programming language. V8 is one program that runs JavaScript; browsers may use other programs.
+- **Node.js** runs JavaScript outside the browser and adds tools for servers and system tasks.
+- **Python** is a programming language. CPython is its most common program for running Python code.
+- **Java** code commonly runs on the Java Virtual Machine, called the JVM.
 
-Language behavior and runtime implementation are related but not identical. For example, Node.js-specific APIs are not part of the JavaScript language itself.
+The language and the program that runs it are not the same thing. For example, JavaScript itself does not include all the server tools that Node.js provides.
 
-## 15. Compilation, interpretation, and JIT
+## 15. Compiling and running code
 
-The simple division **“compiled vs. interpreted” is too simplistic** because modern runtimes often use multiple stages:
+The simple idea **“compiled or interpreted”** does not tell the whole story. Many runtimes use a mix of steps:
 
-- **JavaScript / V8:** Source is parsed and compiled to internal representations; V8 can interpret or execute bytecode and JIT-compile hot code to optimized machine code.
-- **CPython:** Source is compiled to Python bytecode, which the CPython virtual machine executes. This is compilation, even though it is commonly called an interpreted language. Other Python implementations may differ.
-- **Java:** `javac` commonly compiles source to JVM bytecode. A JVM may interpret bytecode and JIT-compile frequently executed code to machine code.
+- **JavaScript / V8:** V8 reads JavaScript and may turn often-used code into machine code while the program runs.
+- **CPython:** Python code is turned into bytecode, which the Python runtime runs.
+- **Java:** Java code is usually turned into bytecode. The JVM runs it and may turn often-used parts into machine code.
 
-Compilation does not by itself determine speed. Startup cost, optimization, workload, libraries, I/O, and runtime configuration also matter.
+How fast a program runs depends on more than these steps. It also depends on the work being done, the libraries, and the computer.
 
-## 16. Event loop vs. threads
+## 16. Event loops and threads
 
-- **Node.js:** Commonly uses an event loop for JavaScript callbacks and non-blocking I/O, with libuv and the operating system handling many I/O operations. Some work is delegated to a worker pool or worker threads. CPU-heavy JavaScript on the main event loop can delay other work.
-- **Python `asyncio`:** Uses an event loop and coroutines for cooperative concurrency, especially useful for many I/O-bound tasks. Blocking or CPU-heavy work can block that loop unless moved to threads, processes, or another execution facility.
-- **Java:** Supports threads and higher-level concurrency APIs. Threads can execute work concurrently; CPU-bound tasks can use multiple cores, subject to available processors and coordination overhead.
+- **Node.js:** Often uses an event loop to handle many waiting tasks, such as network requests. Heavy calculations can block the event loop and slow other work.
+- **Python `asyncio`:** Uses an event loop for tasks that wait for things like network replies. A long calculation can block the loop unless moved elsewhere.
+- **Java:** Can use threads to run tasks at the same time. Threads can help with calculations and waiting tasks, but need careful coordination.
 
-Use the model that fits the work:
+In general:
 
-- **I/O-bound:** Async I/O or threads can help overlap waiting for network, disk, or database operations.
-- **CPU-bound:** Parallel execution using processes, worker threads, or Java threads may help, subject to runtime constraints and workload.
+- **I/O work** means waiting for a network, disk, or database. Handling several waits at once can help.
+- **CPU work** means doing calculations. Using more cores can help, depending on the runtime and program.
 
-Concurrency is not automatically parallelism, and adding concurrency can introduce synchronization costs and bugs.
+Doing work at the same time does not always mean it runs at the same time on different CPU cores.
 
-## 17. What happens during a real-time HTTP request?
+## 17. What happens during a web request?
 
-A simplified server-side flow is:
+A simple server request often works like this:
 
-1. The runtime accepts an HTTP connection or receives a request event.
-2. A handler function or method is invoked with request data.
-3. Local names are bound to values; objects may be created for the request, parsed data, or response.
-4. The handler may call a database or external API. While I/O is pending, an event-driven runtime may serve other work; a threaded server may use another thread.
-5. The result is transformed into a response value, often serialized to JSON or text.
-6. The runtime writes the response to the connection. Request-local bindings can go away after the handler completes, but objects remain alive if references to them were stored elsewhere.
+1. The server receives a request.
+2. It runs a function or method to handle it.
+3. The code reads request data and may make objects.
+4. It may ask a database or another service for information.
+5. It uses the result to make a response, often JSON or text.
+6. The server sends the response back.
 
-This is a conceptual flow; frameworks and server architectures differ.
+When the handler ends, its local names are no longer used. Objects can stay alive if another part of the program still points to them.
 
 ```javascript
 async function getUser(req, res) {
@@ -363,33 +357,32 @@ async function getUser(req, res) {
 }
 ```
 
-The `user` name exists in the handler’s scope. The user object can remain reachable elsewhere if the database client, cache, or application stores another reference to it.
+Here, `user` is a local name. The user object can stay alive longer if the database code, a cache, or another part of the program keeps it.
 
-## 18. Performance
+## 18. How to think about speed
 
-Instead of asking **“Which language is fastest?”**, identify the workload:
+Instead of asking **“Which language is fastest?”**, ask:
 
-- Is most time spent on CPU computation, network I/O, disk I/O, or database queries?
-- What are the data sizes and allocation patterns?
-- Does latency, throughput, startup time, memory use, or developer productivity matter most?
-- What runtime, libraries, hardware, and deployment architecture are involved?
-- Is GC pause behavior important for the application’s latency goals?
+- Is the program mostly doing calculations or waiting for a database or network?
+- How much data does it use?
+- Does it need to respond quickly, handle many users, or use little memory?
+- What computer, runtime, libraries, and system design will it use?
 
-Measure a representative workload. A slow database query can dominate any language-level difference, while CPU-heavy numeric work may benefit from optimized native libraries or a different architecture.
+Test the program with work like the real task. A slow database may matter much more than the language.
 
-## 19. Memory lifetime
+## 19. How long do variables and objects last?
 
-Keep these three ideas separate:
+Keep these ideas separate:
 
-1. **Variable/name lifetime:** A local binding is normally available only within its scope or active call, though closure capture and language-specific rules can extend its useful lifetime.
-2. **Object reachability:** An object remains usable while the program or runtime can reach it through references.
-3. **Object reclamation:** Once unreachable, an object may become eligible for collection. The collector chooses when to reclaim it; memory may remain reserved by the runtime for reuse rather than immediately being returned to the operating system.
+1. **A variable's lifetime:** A local name is usually used while its function is running.
+2. **An object's lifetime:** An object can stay usable as long as some part of the program still points to it.
+3. **Cleanup time:** When no part of the program points to an object, it may be cleaned up later. The runtime decides when.
 
-An object can outlive the function that created it, and a variable going out of scope does not necessarily make its referenced object unreachable.
+An object can live longer than the function that made it. Also, cleanup does not always mean the runtime immediately returns that memory to the computer.
 
-## 20. What happens when `result = a + b` executes?
+## 20. What happens when this line runs?
 
-The exact details depend on the types of `a` and `b`, language rules, and runtime optimizations. Broadly, the runtime evaluates the operands, performs the language-defined addition operation, and binds or assigns the result.
+The exact steps depend on the values and their types. In general, the program reads `a` and `b`, adds them using that language's rules, then stores the result.
 
 ### Python
 
@@ -397,13 +390,11 @@ The exact details depend on the types of `a` and `b`, language rules, and runtim
 result = a + b
 ```
 
-Python looks up `a` and `b`, then applies the addition operation for their types (conceptually, often through `__add__` and possibly reflected-operation behavior). The operation may create a new object or return an existing value, depending on the types and implementation. The name `result` is then bound to the returned object.
-
-For integers, the result is an integer value; for lists, `+` creates a new concatenated list:
+Python checks the values' types and uses the matching addition rule. For numbers it adds them. For lists, it joins them into a new list:
 
 ```python
-print(2 + 3)            # 5
-print([1, 2] + [3])     # [1, 2, 3], a new list
+print(2 + 3)        # 5
+print([1, 2] + [3]) # [1, 2, 3]
 ```
 
 ### JavaScript
@@ -412,14 +403,12 @@ print([1, 2] + [3])     # [1, 2, 3], a new list
 let result = a + b;
 ```
 
-JavaScript evaluates `a` and `b`, applies the `+` operator’s coercion and addition rules, then initializes or assigns the `result` binding. Depending on operand types, `+` can perform numeric addition or string concatenation:
+JavaScript follows its `+` rules. It can add numbers or join text:
 
 ```javascript
-console.log(2 + 3);       // 5
-console.log("2" + 3);     // "23"
+console.log(2 + 3);   // 5
+console.log("2" + 3); // "23"
 ```
-
-Objects may be converted to primitives before the operation. Therefore, `+` is not always simple numeric addition.
 
 ### Java
 
@@ -427,7 +416,7 @@ Objects may be converted to primitives before the operation. Therefore, `+` is n
 int result = a + b;
 ```
 
-Assuming `a` and `b` are `int`, the compiler checks their types and the operation’s validity. At runtime, their integer values are added and the result is assigned to `result`. Integer overflow follows Java’s defined two’s-complement arithmetic behavior; ordinary `int` addition does not throw an overflow exception.
+If `a` and `b` are `int` values, Java adds the numbers and stores the answer in `result`. Java checks that the types make sense before the program runs:
 
 ```java
 int a = 2;
@@ -435,14 +424,14 @@ int b = 3;
 int result = a + b; // 5
 ```
 
-For other types, Java may select a different operation—for example, string concatenation when one operand is a `String`. The declared types and overload/operator rules determine what is valid.
+Java integer addition can go beyond the range an `int` can hold. In that case, it wraps around rather than reporting an error.
 
-## Quick summary
+## Quick recap
 
-- A variable/name is a binding to a value; for objects, that value behaves like a reference.
-- Assignment usually copies the value/reference, not the object.
-- Mutating a shared object can be visible through multiple references; rebinding one local name does not rebind another.
-- JavaScript, Python, and Java all pass argument values; object references are values in the latter cases.
-- Stack and heap are useful concepts, but exact storage is runtime- and optimization-dependent.
-- Garbage collection frees unreachable objects eventually, not necessarily immediately; reachable-but-unneeded objects can still cause memory leaks.
-- Node.js is a JavaScript runtime, while V8 is its JavaScript engine.
+- A variable is a name for a value.
+- Two names can point to the same object.
+- Changing a shared object can be seen through either name.
+- In JavaScript, Python, and Java, a function gets the value passed to it. For an object, that value can be a link to a shared object.
+- Stack and heap are helpful ideas, but they do not show the exact place where every value is stored.
+- Garbage collection cleans up objects that are no longer in use, but not always right away.
+- Node.js runs JavaScript; it is not a separate language.
